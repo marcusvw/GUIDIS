@@ -77,9 +77,16 @@ void DisplayPage::activate()
     pos.y = -1;
     pos.x = -1;
     firstRun = true;
-    handleInput(pos);
+    //handleInput(pos);
 #ifdef HW_M5PAPER
-    canvas.pushCanvas(canvas_pos.x, canvas_pos.y, UPDATE_MODE_GC16);
+    if (GUI_cachedUpdate())
+    {
+        canvas.pushCanvas(canvas_pos.x, canvas_pos.y, UPDATE_MODE_NONE);
+    }
+    else
+    {
+        canvas.pushCanvas(canvas_pos.x, canvas_pos.y, UPDATE_MODE_GC16);
+    }
 #endif
 }
 void DisplayPage::deActivate()
@@ -95,7 +102,14 @@ void DisplayPage::draw()
 {
 
 #ifdef HW_M5PAPER
-    canvas.pushCanvas(canvas_pos.x, canvas_pos.y, UPDATE_MODE_GC16);
+    if (GUI_cachedUpdate())
+    {
+       // canvas.pushCanvas(canvas_pos.x, canvas_pos.y, UPDATE_MODE_NONE);
+    }
+    else
+    {
+        canvas.pushCanvas(canvas_pos.x, canvas_pos.y, UPDATE_MODE_DU4);
+    }
 #endif
 }
 
@@ -106,10 +120,11 @@ void DisplayPage::middleButtonPushed()
 void DisplayPage::handleInput(PAG_pos_t pos)
 {
     char cstr[16];
+    bool redraw = false;
     if (active)
     {
 
-        if ((millis() - lastUpdate) > 500)
+        if ((millis() - lastUpdate) > 1300)
         {
             for (uint32_t x = 0; x < DIS_NUM_IMG; x++)
             {
@@ -130,6 +145,7 @@ void DisplayPage::handleInput(PAG_pos_t pos)
                         ;
                         canvas.drawString(buffer, TXT_X_POS, TXT_L2_Y[x], 4);
                         valFloat[x] = uVal;
+                        redraw = true;
                     }
                 }
                 else if (types[x] == TYPE_INT)
@@ -149,6 +165,7 @@ void DisplayPage::handleInput(PAG_pos_t pos)
 
                         canvas.drawString(buffer, TXT_X_POS, TXT_L2_Y[x], 4);
                         valInt[x] = uVal;
+                        redraw = true;
                     }
                 }
                 else if (types[x] == TYPE_STRING)
@@ -168,13 +185,16 @@ void DisplayPage::handleInput(PAG_pos_t pos)
                         ;
                         canvas.drawString(buffer, TXT_X_POS, TXT_L2_Y[x], 4);
                         valStr[x] = uVal;
+                        redraw = true;
                     }
                 }
-
-                draw();
             }
             lastUpdate = millis();
         }
+    }
+    if (redraw)
+    {
+        draw();
     }
     firstRun = false;
 }
