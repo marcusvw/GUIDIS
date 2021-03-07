@@ -6,6 +6,9 @@
 #ifdef HW_M5CORE2
 #include <M5Core2.h>
 #endif
+#ifdef HW_M5CORE
+#include <M5Stack.h>
+#endif
 #include <ArduinoJson.h>
 #include "../GUI.h"
 #include <FS.h>

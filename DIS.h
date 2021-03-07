@@ -7,6 +7,9 @@
 #ifdef HW_M5CORE2
 #include <M5Core2.h>
 #endif
+#ifdef HW_M5CORE
+#include <M5Stack.h>
+#endif
 #include "../../rpc/RPC.h"
 #include <ArduinoJson.h>
 #include <FS.h>
@@ -34,6 +37,9 @@ private:
     M5EPD_Canvas canvas = (&M5.EPD);
 #endif
 #ifdef HW_M5CORE2
+    #define canvas M5.Lcd
+#endif
+#ifdef HW_M5CORE
     #define canvas M5.Lcd
 #endif
 
